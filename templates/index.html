@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Códigos QR</title>
+    <script>
+        let frame = 0;
+        let totalFrames = 49;
+        let intervalSpeed = 100; // Velocidad de animación en ms
+        let animationInterval;
+
+        function updateLogo() {
+            fetch(`/get_logo_frame/${frame}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("logo").innerText = data.logo;
+                    frame++;
+
+                    // Si llegamos al último frame, detenemos la animación
+                    if (frame >= totalFrames) {
+                        clearInterval(animationInterval);
+                    }
+                });
+        }
+
+        // Mostrar el primer frame antes de iniciar la animación
+        updateLogo();
+
+        // Iniciar la animación
+        animationInterval = setInterval(updateLogo, intervalSpeed);
+    </script>
+
+</head>
+<body>
+    <pre id="logo"></pre>
+    <h1>Generador de Códigos QR</h1>
+    <form id="qrForm">
+        <label>Ingresa un enlace:</label>
+        <input type="text" id="data" name="data" required>
+        <button type="submit">Generar QR</button>
+    </form>
+    <img id="qrImage" src="" style="display:none;">
+    <script>
+        document.getElementById("qrForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let formData = new FormData(this);
+            fetch("/generate", { method: "POST", body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("qrImage").src = data.qr_path;
+                    document.getElementById("qrImage").style.display = "block";
+                });
+        });
+    </script>
+</body>
+</html>
