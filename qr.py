@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import qrcode
+import os
 
 app = Flask(__name__)
 
@@ -31,4 +32,5 @@ def get_logo_frame(frame):
     return jsonify({"logo": logo_frames[frame]})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
